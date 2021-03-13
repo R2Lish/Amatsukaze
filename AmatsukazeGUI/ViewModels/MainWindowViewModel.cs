@@ -202,18 +202,23 @@ namespace Amatsukaze.ViewModels
 
         public async void Initialize()
         {
-            var modelListener = new PropertyChangedEventListener(Model);
-            modelListener.Add(() => Model.IsRunning, (_, __) => RaisePropertyChanged(() => RunningState));
-            modelListener.Add(() => Model.IsSuspended, (_, __) => RaisePropertyChanged(() => RunningState));
-            modelListener.Add(() => Model.IsScheduledSuspend, (_, __) => RaisePropertyChanged(() => RunningState));
-            modelListener.Add(() => Model.ServerHostName, (_, __) => RaisePropertyChanged(() => WindowCaption));
-            modelListener.Add(() => Model.ServerVersion, (_, __) => RaisePropertyChanged(() => WindowCaption));
-            modelListener.Add(() => Model.IsCurrentResultFail, (_, __) =>
+            var modelListener = new PropertyChangedEventListener(Model)
             {
-                RaisePropertyChanged("StatusBackColor");
-                RaisePropertyChanged("StatusForeColor");
-            });
-            modelListener.Add(() => Model.SleepCancel, (_, __) => ShowOrCloseSleepCancel());
+                { () => Model.IsRunning, (_, __) => RaisePropertyChanged(nameof(RunningState)) },
+                { () => Model.IsSuspended, (_, __) => RaisePropertyChanged(nameof(RunningState)) },
+                { () => Model.IsScheduledSuspend, (_, __) => RaisePropertyChanged(nameof(RunningState)) },
+                { () => Model.ServerHostName, (_, __) => RaisePropertyChanged(nameof(WindowCaption)) },
+                { () => Model.ServerVersion, (_, __) => RaisePropertyChanged(nameof(WindowCaption)) },
+                {
+                    () => Model.IsCurrentResultFail,
+                    (_, __) =>
+                    {
+                        RaisePropertyChanged(nameof(StatusBackColor));
+                        RaisePropertyChanged(nameof(StatusForeColor));
+                    }
+                },
+                { () => Model.SleepCancel, (_, __) => ShowOrCloseSleepCancel() },
+            };
             CompositeDisposable.Add(modelListener);
 
             // 他のVMのInitializeを読んでやる

@@ -1,10 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interactivity;
+using Microsoft.Xaml.Behaviors;
 using Amatsukaze.Components.DragExtention;
 using System.Windows.Input;
 

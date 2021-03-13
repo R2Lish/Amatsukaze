@@ -493,7 +493,7 @@ namespace Amatsukaze.Server
                 bufferQ.Post(new Buffer() { buffer = new byte[2 * 1024 * 1024] });
             }
 
-            var sha512 = new SHA512Cng();
+            var sha512 = SHA512.Create();
 
             using (var src = File.OpenRead(srcpath))
             using (var dst = File.Create(dstpath))
