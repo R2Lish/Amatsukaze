@@ -58,29 +58,30 @@ namespace Amatsukaze.Server
                 else if(arg == "-l" || arg == "--launch")
                 {
                     string opt = args[i + 1];
-                    if (opt == "standalone")
+                    switch (opt)
                     {
-                        LaunchType = LaunchType.Standalone;
+                        case "standalone":
+                            LaunchType = LaunchType.Standalone;
+                            break;
+                        case "server":
+                            LaunchType = LaunchType.Server;
+                            break;
+                        case "debug":
+                            LaunchType = LaunchType.Debug;
+                            break;
+                        case "client":
+                            LaunchType = LaunchType.Client;
+                            break;
+                        case "logo":
+                            LaunchType = LaunchType.Logo;
+                            break;
+                        case "add":
+                            LaunchType = LaunchType.Add;
+                            break;
+                        default:
+                            throw new ArgumentException("-l,--launch の引数設定が正しくありません");
                     }
-                    else if (opt == "server")
-                    {
-                        LaunchType = LaunchType.Server;
-                    }
-                    else if(opt == "debug")
-                    {
-                        LaunchType = LaunchType.Debug;
-                    }
-                    else if(opt == "client") {
-                        LaunchType = LaunchType.Client;
-                    }
-                    else if(opt == "logo")
-                    {
-                        LaunchType = LaunchType.Logo;
-                    }
-                    else if (opt == "add")
-                    {
-                        LaunchType = LaunchType.Add;
-                    }
+                    ++i;
                 }
                 else if(arg == "-r" || arg == "--root")
                 {
