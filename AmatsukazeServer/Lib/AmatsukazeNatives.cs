@@ -260,6 +260,9 @@ namespace Amatsukaze.Lib
     {
         public AMTContext Ctx { private set; get; }
         public IntPtr Ptr { private set; get; }
+        private IntPtr FrameBufferPtr { get; set; } = IntPtr.Zero;
+        private int frameWidth = 0;
+        private int frameHeight = 0;
 
         #region Natives
         [DllImport("Amatsukaze.dll", CharSet = CharSet.Unicode)]
@@ -272,7 +275,7 @@ namespace Amatsukaze.Lib
         private static extern int MediaFile_DecodeFrame(IntPtr ptr, float pos, ref int width, ref int height);
 
         [DllImport("Amatsukaze.dll")]
-        private static unsafe extern void MediaFile_GetFrame(IntPtr ptr, byte* rgb, int width, int height);
+        private static extern void MediaFile_GetFrame(IntPtr ptr, IntPtr rgb, int width, int height);
         #endregion
 
         public MediaFile(AMTContext ctx, string filepath, int serviceid)
@@ -283,6 +286,14 @@ namespace Amatsukaze.Lib
             {
                 throw new IOException(Ctx.GetError());
             }
+            if (MediaFile_DecodeFrame(Ptr, 0, ref frameWidth, ref frameHeight) != 0)
+            {
+                if (frameWidth != 0 && frameHeight != 0)
+                {
+                    int bufferSize = frameHeight * frameWidth * 3;
+                    FrameBufferPtr = Marshal.AllocHGlobal(bufferSize);
+                }
+            }
         }
 
         #region IDisposable Support
@@ -292,6 +303,7 @@ namespace Amatsukaze.Lib
         {
             if (!disposedValue)
             {
+                FreeFrameBuffer();
                 MediaFile_Delete(Ptr);
                 Ptr = IntPtr.Zero;
                 disposedValue = true;
@@ -313,6 +325,31 @@ namespace Amatsukaze.Lib
         }
         #endregion
 
+        private void AllocFrameBuffer(int width, int height)
+        {
+            if (width != 0 && height != 0)
+            {
+                frameWidth = width;
+                frameHeight = height;
+                int bufferSize = width * height * 3;
+                FrameBufferPtr = Marshal.AllocHGlobal(bufferSize);
+            }
+        }
+
+        private void FreeFrameBuffer()
+        {
+            Marshal.FreeHGlobal(FrameBufferPtr);
+            FrameBufferPtr = IntPtr.Zero;
+            frameWidth = 0;
+            frameHeight = 0;
+        }
+        
+        private void ReallocFrameBuffer(int width, int height)
+        {
+            FreeFrameBuffer();
+            AllocFrameBuffer(width, height);
+        }
+
         // 失敗したらnullが返るので注意
         public BitmapSource GetFrame(float pos)
         {
@@ -321,17 +358,16 @@ namespace Amatsukaze.Lib
             {
                 if(width != 0 && height != 0)
                 {
-                    int stride = width * 3;
-                    byte[] buffer = new byte[stride * height];
-                    unsafe
+                    if (FrameBufferPtr == IntPtr.Zero || frameWidth < width || frameHeight < height)
                     {
-                        fixed (byte* pbuffer = buffer)
-                        {
-                            MediaFile_GetFrame(Ptr, pbuffer, width, height);
-                        }
+                        ReallocFrameBuffer(width, height);
                     }
+                    int stride = width * 3;
+                    int bufferSize = stride * height;
+
+                    MediaFile_GetFrame(Ptr, FrameBufferPtr, width, height);
                     return BitmapSource.Create(
-                        width, height, 96, 96, PixelFormats.Bgr24, null, buffer, stride);
+                        width, height, 96, 96, PixelFormats.Bgr24, null, FrameBufferPtr, bufferSize,stride);
                 }
             }
             return null;
@@ -345,7 +381,7 @@ namespace Amatsukaze.Lib
         public AMTContext Ctx { private set; get; }
         public IntPtr Ptr { private set; get; }
 
-        #region Natives
+#region Natives
         [DllImport("Amatsukaze.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr LogoFile_Create(IntPtr ctx, string filepath);
 
@@ -383,7 +419,7 @@ namespace Amatsukaze.Lib
         private static extern void LogoFile_SetName(IntPtr ptr, string name);
 
         [DllImport("Amatsukaze.dll")]
-        private static unsafe extern void LogoFile_GetImage(IntPtr ptr, byte* buf, int stride, byte bg);
+        private static extern void LogoFile_GetImage(IntPtr ptr, IntPtr buf, int stride, byte bg);
 
         [DllImport("Amatsukaze.dll", CharSet = CharSet.Unicode)]
         private static extern int LogoFile_Save(IntPtr ptr, string filename);
@@ -391,7 +427,7 @@ namespace Amatsukaze.Lib
         [DllImport("Amatsukaze.dll", CharSet = CharSet.Unicode)]
         private static extern int ScanLogo(IntPtr ctx, string srcpath, int serviceid, string workfile, string dstpath,
             int imgx, int imgy, int w, int h, int thy, int numMaxFrames, LogoAnalyzeCallback cb);
-        #endregion
+#endregion
 
         public LogoFile(AMTContext ctx, string filepath)
         {
@@ -403,7 +439,7 @@ namespace Amatsukaze.Lib
             }
         }
 
-        #region IDisposable Support
+#region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -429,7 +465,7 @@ namespace Amatsukaze.Lib
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
+#endregion
 
         public int Width { get { return LogoFile_GetWidth(Ptr); } }
 
@@ -464,16 +500,13 @@ namespace Amatsukaze.Lib
         public BitmapFrame GetImage(byte bg)
         {
             int stride = Width * 3;
-            byte[] buffer = new byte[stride * Height];
-            unsafe
-            {
-                fixed (byte* pbuffer = buffer)
-                {
-                    LogoFile_GetImage(Ptr, pbuffer, stride, bg);
-                }
-            }
-            return BitmapFrame.Create(BitmapSource.Create(
-                Width, Height, 96, 96, PixelFormats.Bgr24, null, buffer, stride));
+            int bufferSize = stride * Height;
+            IntPtr buffer = Marshal.AllocHGlobal(bufferSize);
+            LogoFile_GetImage(Ptr, buffer, stride, bg);
+            var image = BitmapFrame.Create(BitmapSource.Create(
+                Width, Height, 96, 96, PixelFormats.Bgr24, null, buffer, bufferSize, stride));
+            Marshal.FreeHGlobal(buffer);
+            return image;
         }
 
         public void Save(string filepath)
@@ -501,7 +534,7 @@ namespace Amatsukaze.Lib
         public AMTContext Ctx { private set; get; }
         public IntPtr Ptr { private set; get; }
 
-        #region Natives
+#region Natives
         [DllImport("Amatsukaze.dll")]
         private static extern IntPtr TsSlimFilter_Create(IntPtr ctx, int videoPid);
 
@@ -510,7 +543,7 @@ namespace Amatsukaze.Lib
 
         [DllImport("Amatsukaze.dll", CharSet = CharSet.Unicode)]
         private static extern bool TsSlimFilter_Exec(IntPtr ptr, string srcpath, string dstpath, TsSlimCallback cb);
-        #endregion
+#endregion
 
         public TsSlimFilter(AMTContext ctx, int videoPid)
         {
@@ -522,7 +555,7 @@ namespace Amatsukaze.Lib
             }
         }
 
-        #region IDisposable Support
+#region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -548,7 +581,7 @@ namespace Amatsukaze.Lib
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
+#endregion
 
         public void Exec(string srcpath, string dstpath, TsSlimCallback cb)
         {
@@ -584,7 +617,7 @@ namespace Amatsukaze.Lib
             public ushort[] Reserved;
         }
 
-        #region Natives
+#region Natives
         [DllImport("Amatsukaze.dll")]
         private static extern IntPtr CPUInfo_Create();
 
@@ -593,7 +626,7 @@ namespace Amatsukaze.Lib
 
         [DllImport("Amatsukaze.dll")]
         private static extern IntPtr CPUInfo_GetData(IntPtr ptr, int tag, out int count);
-        #endregion
+#endregion
 
         public CPUInfo(AMTContext ctx)
         {
@@ -605,7 +638,7 @@ namespace Amatsukaze.Lib
             }
         }
 
-        #region IDisposable Support
+#region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
 
         protected virtual void Dispose(bool disposing)
@@ -631,7 +664,7 @@ namespace Amatsukaze.Lib
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
+#endregion
 
         public ProcessGroup[] Get(ProcessGroupKind kind)
         {
