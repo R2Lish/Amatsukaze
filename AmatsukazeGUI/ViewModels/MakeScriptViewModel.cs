@@ -96,7 +96,7 @@ namespace Amatsukaze.ViewModels
         public async void MakeBatchFile()
         {
             string cur = Directory.GetCurrentDirectory();
-            string exe = Path.GetDirectoryName(GetType().Assembly.Location);
+            string exe = AppContext.BaseDirectory;
             string dst = Model.MakeScriptData.OutDir?.TrimEnd(Path.DirectorySeparatorChar);
             string prof = DisplayProfile.GetProfileName(Model.MakeScriptData.SelectedProfile);
             string bat = Model.MakeScriptData.Model.AddQueueBat;
@@ -174,7 +174,7 @@ namespace Amatsukaze.ViewModels
             {
                 sb.Append("rem _EDCBX_DIRECT_\r\n");
             }
-            sb.AppendFormat("\"{0}\\AmatsukazeAddTask.exe\"", exe)
+            sb.AppendFormat("\"{0}AmatsukazeAddTask.exe\"", exe)
                 .AppendFormat(" -r \"{0}\"", cur)
                 .AppendFormat(" -f \"{0}FilePath{0}\" -ip \"{1}\"", direct ? "%" : "$", ip)
                 .AppendFormat(" -p {0}", port)

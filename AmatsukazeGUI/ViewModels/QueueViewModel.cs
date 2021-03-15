@@ -350,7 +350,8 @@ namespace Amatsukaze.ViewModels
                     return;
                 }
             }
-            var apppath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var asm = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+            var apppath = $"{AppContext.BaseDirectory}{asm.Name}.exe";
             var args = "-l logo --file \"" + filepath + "\" --work \"" + workpath + "\" --serviceid " + file.ServiceId;
             if (slimts)
             {

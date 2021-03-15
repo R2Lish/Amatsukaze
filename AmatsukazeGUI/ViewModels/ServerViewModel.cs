@@ -104,9 +104,10 @@ namespace Amatsukaze.ViewModels
 
             if (App.Option.LaunchType == LaunchType.Debug)
             {
+                var asm = Assembly.GetExecutingAssembly().GetName();
                 Process.Start(new ProcessStartInfo()
                 {
-                    FileName = Assembly.GetEntryAssembly().Location,
+                    FileName = $"{AppContext.BaseDirectory}{asm.Name}.exe",
                     Arguments = "--launch client",
                 });
             }

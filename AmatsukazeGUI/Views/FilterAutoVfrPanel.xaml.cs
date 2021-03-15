@@ -27,13 +27,19 @@ namespace Amatsukaze.Views
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            System.Diagnostics.Process.Start(e.Uri.ToString());
+            var url = e.Uri.OriginalString.Replace("&", "^&");
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
 
         private void Hyperlink_PluginFolder(object sender, RequestNavigateEventArgs e)
         {
-            var path = System.IO.Path.GetDirectoryName(typeof(FilterYadifPanel).Assembly.Location) + "\\plugins64";
-            System.Diagnostics.Process.Start(path);
+            var path = AppContext.BaseDirectory + "plugins64";
+            if (!System.IO.Directory.Exists(path))
+            {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            System.Diagnostics.Process.Start("EXPLORER.EXE", path);
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
