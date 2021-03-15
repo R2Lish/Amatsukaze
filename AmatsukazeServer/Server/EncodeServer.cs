@@ -248,7 +248,7 @@ namespace Amatsukaze.Server
                 var clientManager = new ClientManager(this);
                 ServerTask = clientManager.Listen(port);
                 this.Client = clientManager;
-                RaisePropertyChanged("ClientManager");
+                RaisePropertyChanged(nameof(ClientManager));
             }
 #if PROFILE
             prof.PrintTime("EncodeServer 1");

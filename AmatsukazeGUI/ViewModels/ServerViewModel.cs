@@ -80,7 +80,7 @@ namespace Amatsukaze.ViewModels
                     await RealCloseWindow();
                 });
                 await Server.Init();
-                RaisePropertyChanged("Server");
+                RaisePropertyChanged(nameof(Server));
                 WindowCaption = "AmatsukazeServer" + Server.Version+"@" + Dns.GetHostName() + ":" + App.Option.ServerPort;
 
                 // SleepCancel

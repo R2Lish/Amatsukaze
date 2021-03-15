@@ -494,7 +494,7 @@ namespace Amatsukaze.Models
                     _Setting.PropertyChanged -= SettingChanged;
                 _Setting = value;
                 _Setting.PropertyChanged += SettingChanged;
-                RaisePropertyChanged("CurrentClusters");
+                RaisePropertyChanged(nameof(CurrentClusters));
                 RaisePropertyChanged();
                 FinishActionList = _Setting.Model.EnableShutdownAction 
                     ? FinishActionListWithShutdown : FinishActionListNoShutdown;
@@ -507,7 +507,7 @@ namespace Amatsukaze.Models
 
             if(args.PropertyName == "AffinitySetting")
             {
-                RaisePropertyChanged("CurrentClusters");
+                RaisePropertyChanged(nameof(CurrentClusters));
             }
         }
         #endregion
@@ -552,7 +552,7 @@ namespace Amatsukaze.Models
                     return;
                 _AffinityClusters = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("CurrentClusters");
+                RaisePropertyChanged(nameof(CurrentClusters));
             }
         }
 
@@ -800,11 +800,6 @@ namespace Amatsukaze.Models
         public Task UpdateService(DisplayService service)
         {
             return UpdateService(service.Data.ServiceId);
-        }
-
-        private void ConsoleText_TextChanged()
-        {
-            RaisePropertyChanged("ConsoleText");
         }
 
         private void AddLog(string text)
@@ -1250,8 +1245,8 @@ namespace Amatsukaze.Models
             if(data.ServerInfo != null)
             {
                 serverInfo = data.ServerInfo;
-                RaisePropertyChanged("ServerHostName");
-                RaisePropertyChanged("ServerVersion");
+                RaisePropertyChanged(nameof(ServerHostName));
+                RaisePropertyChanged(nameof(ServerVersion));
             }
             if (data.AddQueueBatFiles != null)
             {

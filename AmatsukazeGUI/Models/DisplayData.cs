@@ -48,7 +48,7 @@ namespace Amatsukaze.Models
                 if (_TextLines == value)
                     return;
                 _TextLines = value;
-                RaisePropertyChanged("LastLine");
+                RaisePropertyChanged(nameof(LastLine));
                 RaisePropertyChanged();
             }
         }
@@ -67,7 +67,7 @@ namespace Amatsukaze.Models
                 TextLines.RemoveAt(0);
             }
             TextLines.Add(text);
-            RaisePropertyChanged("LastLine");
+            RaisePropertyChanged(nameof(LastLine));
         }
 
         public override void OnReplaceLine(string text)
@@ -80,7 +80,7 @@ namespace Amatsukaze.Models
             {
                 TextLines[TextLines.Count - 1] = text;
             }
-            RaisePropertyChanged("LastLine");
+            RaisePropertyChanged(nameof(LastLine));
         }
 
         public void SetTextLines(List<string> lines)
@@ -91,7 +91,7 @@ namespace Amatsukaze.Models
             {
                 TextLines.Add(s);
             }
-            RaisePropertyChanged("LastLine");
+            RaisePropertyChanged(nameof(LastLine));
         }
     }
 
@@ -108,7 +108,7 @@ namespace Amatsukaze.Models
                 if (_Phase == value)
                     return;
                 _Phase = value;
-                RaisePropertyChanged("PhaseString");
+                RaisePropertyChanged(nameof(PhaseString));
                 RaisePropertyChanged();
             }
         }
@@ -143,10 +143,10 @@ namespace Amatsukaze.Models
                 if (_Resource == value)
                     return;
                 _Resource = value;
-                RaisePropertyChanged("CPU");
-                RaisePropertyChanged("HDD");
-                RaisePropertyChanged("GPU");
-                RaisePropertyChanged("GpuIndex");
+                RaisePropertyChanged(nameof(CPU));
+                RaisePropertyChanged(nameof(HDD));
+                RaisePropertyChanged(nameof(GPU));
+                RaisePropertyChanged(nameof(GpuIndex));
                 RaisePropertyChanged();
             }
         }
@@ -471,8 +471,8 @@ namespace Amatsukaze.Models
                 if (Data.KfmVfr120fps == newValue)
                     return;
                 Data.KfmVfr120fps = newValue;
-                RaisePropertyChanged("VFRFps");
-                RaisePropertyChanged("VFR120Fps");
+                RaisePropertyChanged(nameof(VFRFps));
+                RaisePropertyChanged(nameof(VFR120Fps));
             }
         }
         public bool VFR120Fps {
@@ -481,8 +481,8 @@ namespace Amatsukaze.Models
                 if (Data.KfmVfr120fps == value)
                     return;
                 Data.KfmVfr120fps = value;
-                RaisePropertyChanged("VFRFps");
-                RaisePropertyChanged("VFR120Fps");
+                RaisePropertyChanged(nameof(VFRFps));
+                RaisePropertyChanged(nameof(VFR120Fps));
             }
         }
         #endregion
@@ -859,7 +859,7 @@ namespace Amatsukaze.Models
                     return;
                 Data.DeinterlaceAlgorithm = (DeinterlaceAlgorithm)value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("SelectedDeinterlace");
+                RaisePropertyChanged(nameof(SelectedDeinterlace));
             }
         }
         public DeinterlaceAlgorithmViewModel SelectedDeinterlace
@@ -1102,7 +1102,7 @@ namespace Amatsukaze.Models
                     return;
                 Data.Name = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("SortKey");
+                RaisePropertyChanged(nameof(SortKey));
             }
         }
         public string SortKey {
@@ -1124,7 +1124,7 @@ namespace Amatsukaze.Models
                 Data.FilterOption = (FilterOption)value;
                 UpdateBitrate();
                 RaisePropertyChanged();
-                RaisePropertyChanged("SelectedFilterOption");
+                RaisePropertyChanged(nameof(SelectedFilterOption));
             }
         }
         public ViewModel SelectedFilterOption
@@ -1145,7 +1145,7 @@ namespace Amatsukaze.Models
                 Data.EncoderType = (EncoderType)value;
                 UpdateWarningText();
                 RaisePropertyChanged();
-                RaisePropertyChanged("EncoderOption");
+                RaisePropertyChanged(nameof(EncoderOption));
             }
         }
         #endregion
@@ -1779,7 +1779,7 @@ namespace Amatsukaze.Models
                     return;
                 Data.NumEncodeBufferFrames = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("NumEncodeBufferFramesIndex");
+                RaisePropertyChanged(nameof(NumEncodeBufferFramesIndex));
             }
         }
         public int NumEncodeBufferFramesIndex {
@@ -1798,7 +1798,7 @@ namespace Amatsukaze.Models
                     return;
                 Data.NumEncodeBufferFrames = frames;
                 RaisePropertyChanged();
-                RaisePropertyChanged("NumEncodeBufferFrames");
+                RaisePropertyChanged(nameof(NumEncodeBufferFrames));
             }
         }
         #endregion
@@ -1835,7 +1835,7 @@ namespace Amatsukaze.Models
                     return;
                 Data.AudioEncoderType = (AudioEncoderType)value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("AudioEncoderOption");
+                RaisePropertyChanged(nameof(AudioEncoderOption));
             }
         }
         #endregion
@@ -2137,18 +2137,18 @@ namespace Amatsukaze.Models
                 Data.X265Option = X265Option;
                 Data.QSVEncOption = QSVEncOption;
                 Data.NVEncOption = NVEncOption;
-                RaisePropertyChanged("EncoderOption");
+                RaisePropertyChanged(nameof(EncoderOption));
             }
         }
 
         private void UpdateBitrate()
         {
-            RaisePropertyChanged("Bitrate18MPEG2");
-            RaisePropertyChanged("Bitrate12MPEG2");
-            RaisePropertyChanged("Bitrate7MPEG2");
-            RaisePropertyChanged("Bitrate18H264");
-            RaisePropertyChanged("Bitrate12H264");
-            RaisePropertyChanged("Bitrate7H264");
+            RaisePropertyChanged(nameof(Bitrate18MPEG2));
+            RaisePropertyChanged(nameof(Bitrate12MPEG2));
+            RaisePropertyChanged(nameof(Bitrate7MPEG2));
+            RaisePropertyChanged(nameof(Bitrate18H264));
+            RaisePropertyChanged(nameof(Bitrate12H264));
+            RaisePropertyChanged(nameof(Bitrate7H264));
         }
 
         private double CalcBitrate(double src, int encoder)
@@ -2313,7 +2313,7 @@ namespace Amatsukaze.Models
                 _Data = value;
 
                 _LogoList = null;
-                RaisePropertyChanged("LogoList");
+                RaisePropertyChanged(nameof(LogoList));
                 RaisePropertyChanged();
             }
         }
@@ -2436,7 +2436,7 @@ namespace Amatsukaze.Models
                     return;
                 _From = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("DateChanged");
+                RaisePropertyChanged(nameof(DateChanged));
             }
         }
         #endregion
@@ -2453,7 +2453,7 @@ namespace Amatsukaze.Models
                     return;
                 _To = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("DateChanged");
+                RaisePropertyChanged(nameof(DateChanged));
             }
         }
         #endregion
@@ -2549,7 +2549,7 @@ namespace Amatsukaze.Models
         {
             GPUResources = Enumerable.Range(0, Model.NumGPU).Select(
                 i => new DisplayGPUResource() { Model = Model, Index = i }).ToArray();
-            RaisePropertyChanged("GPUResources");
+            RaisePropertyChanged(nameof(GPUResources));
         }
 
         public void Refresh()
@@ -2558,7 +2558,7 @@ namespace Amatsukaze.Models
 
             RunHours = Enumerable.Range(0, 24).Select(
                 i => new DisplayRunHour() { Model = Model, Hour = i }).ToArray();
-            RaisePropertyChanged("RunHours");
+            RaisePropertyChanged(nameof(RunHours));
         }
 
         #region WorkPath変更通知プロパティ
@@ -2584,7 +2584,7 @@ namespace Amatsukaze.Models
                 if (Model.NumParallel == value)
                     return;
                 Model.NumParallel = value;
-                RaisePropertyChanged("NumParallelIndex");
+                RaisePropertyChanged(nameof(NumParallelIndex));
                 RaisePropertyChanged();
             }
         }
@@ -2600,7 +2600,7 @@ namespace Amatsukaze.Models
                 if (Model.NumParallel == numParallel)
                     return;
                 Model.NumParallel = numParallel;
-                RaisePropertyChanged("NumParallel");
+                RaisePropertyChanged(nameof(NumParallel));
                 RaisePropertyChanged();
             }
         }
@@ -3041,7 +3041,7 @@ namespace Amatsukaze.Models
                 if (Model.PauseOnStarted == value)
                     return;
                 Model.PauseOnStarted = value;
-                RaisePropertyChanged("PauseOnStarted");
+                RaisePropertyChanged(nameof(PauseOnStarted));
             }
         }
         #endregion
@@ -3053,7 +3053,7 @@ namespace Amatsukaze.Models
                 if (Model.PrintTimePrefix == value)
                     return;
                 Model.PrintTimePrefix = value;
-                RaisePropertyChanged("PrintTimePrefix");
+                RaisePropertyChanged(nameof(PrintTimePrefix));
             }
         }
         #endregion
@@ -3842,7 +3842,7 @@ namespace Amatsukaze.Models
                     return;
                 _SelectedIndex = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("SelectedCondition");
+                RaisePropertyChanged(nameof(SelectedCondition));
             }
         }
 

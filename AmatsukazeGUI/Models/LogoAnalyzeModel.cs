@@ -30,7 +30,7 @@ namespace Amatsukaze.Models
                     return;
                 _CurrentImage = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("IsNoImage");
+                RaisePropertyChanged(nameof(IsNoImage));
             }
         }
 
@@ -151,7 +151,6 @@ namespace Amatsukaze.Models
                     return;
                 _NowScanning = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("IsLogoScanEnabled");
             }
         }
         #endregion

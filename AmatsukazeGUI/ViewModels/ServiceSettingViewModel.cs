@@ -74,8 +74,8 @@ namespace Amatsukaze.ViewModels
                 if (_SelectedServiceIndex == value)
                     return;
                 _SelectedServiceIndex = value;
-                RaisePropertyChanged("SelectedServiceItem");
-                RaisePropertyChanged("SelectedLogoItem");
+                RaisePropertyChanged(nameof(SelectedServiceItem));
+                RaisePropertyChanged(nameof(SelectedLogoItem));
                 RaisePropertyChanged();
             }
         }
@@ -104,7 +104,7 @@ namespace Amatsukaze.ViewModels
                 if (_SelectedLogoIndex == value)
                     return;
                 _SelectedLogoIndex = value;
-                RaisePropertyChanged("SelectedLogoItem");
+                RaisePropertyChanged(nameof(SelectedLogoItem));
                 RaisePropertyChanged();
             }
         }

@@ -76,7 +76,7 @@ namespace Amatsukaze.ViewModels
                     return;
                 _Elapsed = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("RemainSeconds");
+                RaisePropertyChanged(nameof(RemainSeconds));
             }
         }
         #endregion
@@ -91,7 +91,7 @@ namespace Amatsukaze.ViewModels
                     return;
                 _WaitSeconds = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("RemainSeconds");
+                RaisePropertyChanged(nameof(RemainSeconds));
             }
         }
         #endregion

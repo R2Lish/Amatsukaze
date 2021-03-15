@@ -67,7 +67,7 @@ namespace Amatsukaze.ViewModels
                 _Image = value;
                 MapStr = value.MapStr;
                 RaisePropertyChanged();
-                RaisePropertyChanged("IsModified");
+                RaisePropertyChanged(nameof(IsModified));
             }
         }
         #endregion
@@ -82,7 +82,7 @@ namespace Amatsukaze.ViewModels
                     return;
                 _MapStr = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("IsModified");
+                RaisePropertyChanged(nameof(IsModified));
             }
         }
 

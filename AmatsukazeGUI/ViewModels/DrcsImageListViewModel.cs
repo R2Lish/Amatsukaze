@@ -107,7 +107,7 @@ namespace Amatsukaze.ViewModels
                     return;
                 _PanelSelectedIndex = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("IsNoMapOnly");
+                RaisePropertyChanged(nameof(IsNoMapOnly));
                 imagesView.Refresh();
             }
         }

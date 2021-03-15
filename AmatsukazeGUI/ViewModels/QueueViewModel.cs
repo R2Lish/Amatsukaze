@@ -1101,8 +1101,8 @@ namespace Amatsukaze.ViewModels
                     return;
                 _ShiftDown = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged("RemoveButtonHeader");
-                RaisePropertyChanged("RemoveCompletedHeader");
+                RaisePropertyChanged(nameof(RemoveButtonHeader));
+                RaisePropertyChanged(nameof(RemoveCompletedHeader));
             }
         }
 
@@ -1283,12 +1283,12 @@ namespace Amatsukaze.ViewModels
 
         private void ItemStateUpdated()
         {
-            RaisePropertyChanged("Active");
-            RaisePropertyChanged("Encoding");
-            RaisePropertyChanged("Complete");
-            RaisePropertyChanged("Pending");
-            RaisePropertyChanged("Fail");
-            RaisePropertyChanged("Canceled");
+            RaisePropertyChanged(nameof(Active));
+            RaisePropertyChanged(nameof(Encoding));
+            RaisePropertyChanged(nameof(Complete));
+            RaisePropertyChanged(nameof(Pending));
+            RaisePropertyChanged(nameof(Fail));
+            RaisePropertyChanged(nameof(Canceled));
         }
 
         private void UpdateSearchAll()
