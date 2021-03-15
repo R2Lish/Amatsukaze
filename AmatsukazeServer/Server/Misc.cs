@@ -45,6 +45,8 @@ namespace Amatsukaze.Server
 
         public GUIOPtion(string[] args)
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             for (int i = 0; i < args.Length; ++i)
             {
                 string arg = args[i];

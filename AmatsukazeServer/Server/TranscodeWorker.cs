@@ -41,6 +41,8 @@ namespace Amatsukaze.Server
 
         private List<Task> waitList;
 
+        private Encoding ShiftJISEncoder = Encoding.GetEncoding("Shift-JIS");
+
         public TranscodeWorker(int id, EncodeServer server)
         {
             this.Id = id;
@@ -143,6 +145,12 @@ namespace Amatsukaze.Server
         private Task WriteTextBytes(byte[] buffer)
         {
             return WriteTextBytes(buffer, 0, buffer.Length);
+        }
+
+        private Task WriteShiftJISTextBytes(byte[] buffer, int offset, int length)
+        {
+            var charCodeConvertedBuffer = Encoding.Convert(ShiftJISEncoder, Encoding.Default, buffer, offset, length);
+            return WriteTextBytes(charCodeConvertedBuffer, 0, charCodeConvertedBuffer.Length);
         }
 
         private async Task RedirectOut(StreamReader stream)
@@ -928,7 +936,7 @@ namespace Amatsukaze.Server
                 {
                     using (var p = new NormalProcess(psi)
                     {
-                        OnOutput = WriteTextBytes
+                        OnOutput = WriteShiftJISTextBytes
                     })
                     {
                         process = p;
