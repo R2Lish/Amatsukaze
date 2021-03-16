@@ -1,16 +1,14 @@
-﻿using Amatsukaze.Models;
-using Amatsukaze.Server;
-using Livet;
-using Livet.Commands;
-using Livet.Messaging;
-using Livet.Messaging.Windows;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+
+using Livet.Commands;
+using Livet.Messaging;
+
+using Amatsukaze.Models;
+using Amatsukaze.Server;
 
 namespace Amatsukaze.ViewModels
 {

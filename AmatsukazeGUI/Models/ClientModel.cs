@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Threading;
 using System.IO;
 
 using Livet;
@@ -12,7 +11,6 @@ using Amatsukaze.Server;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Data;
-using Livet.Commands;
 using System.Windows;
 using System.ComponentModel;
 using System.Net;

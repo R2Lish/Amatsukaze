@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
+using System.IO;
 using System.Windows;
 
 using Livet;
-using System.Threading;
-using System.Collections.Concurrent;
 using Amatsukaze.Server;
-using System.Runtime.InteropServices;
-using System.IO;
 
 namespace Amatsukaze
 {

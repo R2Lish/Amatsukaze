@@ -1,6 +1,5 @@
 ﻿using Amatsukaze.Models;
 using Livet.Commands;
-using Livet.EventListeners;
 
 namespace Amatsukaze.ViewModels
 {

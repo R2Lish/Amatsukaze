@@ -1,7 +1,6 @@
 ﻿using Amatsukaze.Models;
 using Amatsukaze.Server;
 using Livet.Commands;
-using Livet.EventListeners;
 using Livet.Messaging;
 using Microsoft.Win32;
 using System;
