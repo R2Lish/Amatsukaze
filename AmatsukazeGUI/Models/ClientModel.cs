@@ -52,35 +52,21 @@ namespace Amatsukaze.Models
         private string currentNewProfile;
         private string currentNewAutoSelect;
 
-        public bool IsStandalone {
-            get {
-                return App.Option.LaunchType == LaunchType.Standalone;
-            }
-        }
+        public bool IsStandalone => App.Option.LaunchType == LaunchType.Standalone;
 
-        public string ServerIP
-        {
-            get { return appData.ServerIP; }
-        }
+        public string ServerIP => appData.ServerIP;
 
-        public int ServerPort
-        {
-            get { return appData.ServerPort; }
-        }
+        public int ServerPort => appData.ServerPort;
 
-        public EndPoint LocalIP {
-            get {
-                return (Server as ServerConnection)?.LocalIP;
-            }
-        }
+        public EndPoint LocalIP => (Server as ServerConnection)?.LocalIP;
 
-        public byte[] MacAddress { get { return serverInfo.MacAddress; } }
+        public byte[] MacAddress => serverInfo.MacAddress;
 
-        public int[] PriorityList { get { return new int[]{ 1, 2, 3, 4, 5 }; } }
+        public int[] PriorityList => new int[] { 1, 2, 3, 4, 5 };
 
-        public string[] AffinityList { get { return new string[] { "なし", "コア", "L2", "L3", "NUMA", "Group" }; } }
+        public string[] AffinityList => new string[] { "なし", "コア", "L2", "L3", "NUMA", "Group" };
 
-        public string[] ProcessPriorityList { get { return new string[] { "通常", "通常以下", "低" }; } }
+        public string[] ProcessPriorityList => new string[] { "通常", "通常以下", "低" };
 
         public string ServerHostName {
             get {
@@ -96,9 +82,7 @@ namespace Amatsukaze.Models
             }
         }
 
-        public string ServerVersion {
-            get { return serverInfo.Version; }
-        }
+        public string ServerVersion => serverInfo.Version;
 
         public ObservableCollection<DisplayConsole> ConsoleList { get; } = new ObservableCollection<DisplayConsole>();
 
@@ -637,7 +621,7 @@ namespace Amatsukaze.Models
         }
         #endregion
 
-        public SimpleDisplayConsole AddQueueConsole { get; } = new SimpleDisplayConsole();
+        public SimpleDisplayConsole AddQueueConsole { get; private set; }
 
         public ClientModel()
         {
@@ -653,6 +637,8 @@ namespace Amatsukaze.Models
             AutoSelectListView.IsLiveSorting = true;
             SelectableProfiles.Add(new CollectionContainer() { Collection = AutoSelectListView });
             SelectableProfiles.Add(new CollectionContainer() { Collection = ProfileListView });
+
+            AddQueueConsole = new SimpleDisplayConsole(Setting);
 
             LoadAppData();
             requestLogoThread = RequestLogoThread();
@@ -989,7 +975,6 @@ namespace Amatsukaze.Models
         public void ExportLogCSV(Stream fs)
         {
             var sw = new StreamWriter(fs, Encoding.UTF8);
-            var sb = new StringBuilder();
             var header = new string[] {
                 "結果",
                 "メッセージ",
@@ -1270,7 +1255,7 @@ namespace Amatsukaze.Models
             int numRequire = index + 1;
             while (ConsoleList.Count < numRequire)
             {
-                ConsoleList.Add(new DisplayConsole() { Id = ConsoleList.Count + 1 });
+                ConsoleList.Add(new DisplayConsole(Setting) { Id = ConsoleList.Count + 1 });
             }
         }
 

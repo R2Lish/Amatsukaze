@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Amatsukaze.Models
 {
@@ -33,6 +34,13 @@ namespace Amatsukaze.Models
 
     public class SimpleDisplayConsole : ConsoleTextBase
     {
+        public DisplaySetting Setting { get; private set; }
+
+        public SimpleDisplayConsole(DisplaySetting displaySetting)
+        {
+            Setting = displaySetting;
+        }
+
         #region TextLines変更通知プロパティ
         private ObservableCollection<string> _TextLines = new ObservableCollection<string>();
 
@@ -92,6 +100,9 @@ namespace Amatsukaze.Models
     public class DisplayConsole : SimpleDisplayConsole
     {
         public int Id { get; set; }
+        public DisplayConsole(DisplaySetting displaySetting)
+            :base(displaySetting)
+        { }
 
         #region Phase変更通知プロパティ
         private ResourcePhase _Phase;
@@ -3094,6 +3105,18 @@ namespace Amatsukaze.Models
         }
         #endregion
 
+        #region ConsoleFont変更通知プロパティ
+        public FontFamily ConsoleFont
+        {
+            get { return new FontFamily(Model.ConsoleFontFamilyName); }
+            set
+            {
+                if (Model.ConsoleFontFamilyName == value.Source) { return; }
+                Model.ConsoleFontFamilyName = value.Source;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
     }
 
     public class DisplayFinishSetting : NotificationObject

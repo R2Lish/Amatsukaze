@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Amatsukaze.Server
@@ -456,6 +457,8 @@ namespace Amatsukaze.Server
         public bool RunHoursSuspendEncoders { get; set; }
         [DataMember]
         public bool[] RunHours { get; set; }
+        [DataMember]
+        public string ConsoleFontFamilyName { get; set; }
 
         public ExtensionDataObject ExtensionData { get; set; }
 
