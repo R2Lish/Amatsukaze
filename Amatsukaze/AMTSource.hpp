@@ -903,7 +903,8 @@ public:
 		vi.pixel_type = VideoInfo::CS_YV12;
 		vi.SetFPS(format.frameRateNum, format.frameRateDenom);
 		auto extra = file.getExtra();
-		if (codec->DecodeBegin(UTVF_YV12, vi.width, vi.height, CBGROSSWIDTH_WINDOWS, extra.data(), (int)extra.size())) {
+		size_t cbGrossWidth[] = { CBGROSSWIDTH_WINDOWS, CBGROSSWIDTH_WINDOWS, CBGROSSWIDTH_WINDOWS };
+		if (codec->DecodeBegin(UTVF_YV12, vi.width, vi.height, cbGrossWidth, extra.data(), (int)extra.size())) {
 			THROW(RuntimeException, "failed to DecodeBegin (UtVideo)");
 		}
 

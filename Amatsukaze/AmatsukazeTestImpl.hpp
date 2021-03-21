@@ -312,6 +312,7 @@ static int LosslessTest(AMTContext& ctx, const ConfigWrapper& setting)
 
 		VideoInfo vi = clip->GetVideoInfo();
 
+		size_t cbGrossWidth[] = { CBGROSSWIDTH_WINDOWS, CBGROSSWIDTH_WINDOWS, CBGROSSWIDTH_WINDOWS };
 		size_t rawSize = vi.width * vi.height * 3 / 2;
 		size_t outSize = codecEnc->EncodeGetOutputSize(UTVF_YV12, vi.width, vi.height);
 		size_t headerSize = codecEnc->EncodeGetExtraDataSize();
@@ -323,10 +324,10 @@ static int LosslessTest(AMTContext& ctx, const ConfigWrapper& setting)
 		if (codecEnc->EncodeGetExtraData(memHeader.get(), headerSize, UTVF_YV12, vi.width, vi.height)) {
 			THROW(RuntimeException, "failed to EncodeGetExtraData (UtVideo)");
 		}
-		if (codecEnc->EncodeBegin(UTVF_YV12, vi.width, vi.height, CBGROSSWIDTH_WINDOWS)) {
+		if (codecEnc->EncodeBegin(UTVF_YV12, vi.width, vi.height, cbGrossWidth)) {
 			THROW(RuntimeException, "failed to EncodeBegin (UtVideo)");
 		}
-		if (codecDec->DecodeBegin(UTVF_YV12, vi.width, vi.height, CBGROSSWIDTH_WINDOWS, memHeader.get(), headerSize)) {
+		if (codecDec->DecodeBegin(UTVF_YV12, vi.width, vi.height, cbGrossWidth, memHeader.get(), headerSize)) {
 			THROW(RuntimeException, "failed to DecodeBegin (UtVideo)");
 		}
 
@@ -361,6 +362,7 @@ static int LosslessTest(AMTContext& ctx, const ConfigWrapper& setting)
 
 static int LosslessFileTest(AMTContext& ctx, const ConfigWrapper& setting)
 {
+	size_t cbGrossWidth[] = { CBGROSSWIDTH_WINDOWS, CBGROSSWIDTH_WINDOWS, CBGROSSWIDTH_WINDOWS };
 	auto env = make_unique_ptr(CreateScriptEnvironment2());
 	auto codec = make_unique_ptr(CCodec::CreateInstance(UTVF_ULH0, "Amatsukaze"));
 
@@ -382,7 +384,7 @@ static int LosslessFileTest(AMTContext& ctx, const ConfigWrapper& setting)
 		if (codec->EncodeGetExtraData(extra.data(), extraSize, UTVF_YV12, vi.width, vi.height)) {
 			THROW(RuntimeException, "failed to EncodeGetExtraData (UtVideo)");
 		}
-		if (codec->EncodeBegin(UTVF_YV12, vi.width, vi.height, CBGROSSWIDTH_WINDOWS)) {
+		if (codec->EncodeBegin(UTVF_YV12, vi.width, vi.height, cbGrossWidth)) {
 			THROW(RuntimeException, "failed to EncodeBegin (UtVideo)");
 		}
 		file.writeHeader(vi.width, vi.height, numframes, extra);
@@ -412,7 +414,7 @@ static int LosslessFileTest(AMTContext& ctx, const ConfigWrapper& setting)
 		auto memDec = std::unique_ptr<uint8_t[]>(new uint8_t[rawSize]);
 		auto memOut = std::unique_ptr<uint8_t[]>(new uint8_t[outSize]);
 
-		if (codec->DecodeBegin(UTVF_YV12, width, height, CBGROSSWIDTH_WINDOWS, extra.data(), (int)extra.size())) {
+		if (codec->DecodeBegin(UTVF_YV12, width, height, cbGrossWidth, extra.data(), (int)extra.size())) {
 			THROW(RuntimeException, "failed to DecodeBegin (UtVideo)");
 		}
 
