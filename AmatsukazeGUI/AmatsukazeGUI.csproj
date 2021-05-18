@@ -19,4 +19,8 @@
     <ProjectReference Include="..\AmatsukazeServer\AmatsukazeServer.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /y /d $(SolutionDir)lib\x64\utv_core.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\AviSynth.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\avcodec-58.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\avdevice-58.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\avfilter-7.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\avformat-58.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\avutil-56.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\swresample-3.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)lib\x64\swscale-5.dll $(TargetDir)&#xD;&#xA;xcopy /y /d $(SolutionDir)\x64\$(ConfigurationName)\Amatsukaze.dll $(TargetDir)" />
+  </Target>
+
 </Project>

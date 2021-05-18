@@ -30,6 +30,7 @@ static void printHelp(const tchar* bin) {
 		"  -o|--output <パス>  出力ファイルパス\n"
 		"  -s|--serviceid <数値> 処理するサービスIDを指定[]\n"
 		"  -w|--work   <パス>  一時ファイルパス[./]\n"
+		"  -c|--cache  <パス>  キャッシュファイルパス\n"
 		"  -et|--encoder-type <タイプ>  使用エンコーダタイプ[x264]\n"
 		"                      対応エンコーダ: x264,x265,QSVEnc,NVEnc,VCEEnc,SVT-AV1\n"
 		"  -e|--encoder <パス> エンコーダパス[x264.exe]\n"
@@ -61,6 +62,7 @@ static void printHelp(const tchar* bin) {
 		"                      使用可能デコーダ: default,QSV,CUVID\n"
 		"  --chapter           チャプター・CM解析を行う\n"
 		"  --subtitles         字幕を処理する\n"
+		"  --make-trimavs      CM解析実行時CMカットavsファイルを生成する(ファイルが存在する場合は上書きしない)\n"
 		"  --nicojk            ニコニコ実況コメントを追加する\n"
 		"  --logo <パス>       ロゴファイルを指定（いくつでも指定可能）\n"
 		"  --erase-logo <パス> ロゴ消し用追加ロゴファイル。ロゴ消しに適用されます。（いくつでも指定可能）\n"
@@ -219,6 +221,9 @@ static std::unique_ptr<ConfigWrapper> parseArgs(AMTContext& ctx, int argc, const
 				conf.workDir = _T("./");
 			}
 		}
+		else if (key == _T("-c") || key == _T("--cache")) {
+			conf.usingCache = true;
+		}
 		else if (key == _T("-et") || key == _T("--encoder-type")) {
 			tstring arg = getParam(argc, argv, i++);
 			conf.encoder = encoderFtomString(arg);
@@ -296,6 +301,9 @@ static std::unique_ptr<ConfigWrapper> parseArgs(AMTContext& ctx, int argc, const
 		}
 		else if (key == _T("--subtitles")) {
 			conf.subtitles = true;
+		}
+		else if (key == _T("--make-trimavs")) {
+			conf.makeTrimavs = true;
 		}
 		else if (key == _T("--nicojk")) {
 			nicojk = true;
@@ -458,18 +466,18 @@ static std::unique_ptr<ConfigWrapper> parseArgs(AMTContext& ctx, int argc, const
 				THROWF(ArgumentException, "--pmt-cutの指定が間違っています");
 			}
 		}
-    else if (key == _T("--print-prefix")) {
-      const auto arg = getParam(argc, argv, i++);
-      if (arg == _T("default")) {
-        conf.printPrefix = AMT_PREFIX_DEFAULT;
-      }
-      else if (arg == _T("time")) {
-        conf.printPrefix = AMT_PREFIX_TIME;
-      }
-      else {
-        THROWF(ArgumentException, "--print-prefixの指定が間違っています");
-      }
-    }
+		else if (key == _T("--print-prefix")) {
+			const auto arg = getParam(argc, argv, i++);
+			if (arg == _T("default")) {
+				conf.printPrefix = AMT_PREFIX_DEFAULT;
+			}
+			else if (arg == _T("time")) {
+				conf.printPrefix = AMT_PREFIX_TIME;
+			}
+			else {
+				THROWF(ArgumentException, "--print-prefixの指定が間違っています");
+			}
+		}
 		else if (key.size() == 0) {
 			continue;
 		}
@@ -694,8 +702,8 @@ __declspec(dllexport) int AmatsukazeCLI(int argc, const wchar_t* argv[]) {
 		ctx.setDefaultCP();
 
 		auto setting = parseArgs(ctx, argc, argv);
-
-    ctx.setTimePrefix(setting->getPrintPrefix() == AMT_PREFIX_TIME);
+		
+		ctx.setTimePrefix(setting->getPrintPrefix() == AMT_PREFIX_TIME);
 
 		// CPUアフィニティを設定
 		if (!SetCPUAffinity(setting->getAffinityGroup(), setting->getAffinityMask())) {

@@ -27,10 +27,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmatsukazeServerCLI", "AmatsukazeServerCLI\AmatsukazeServerCLI.csproj", "{4CBA00B3-E321-453A-B5F0-C9D340A658B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmatsukazeGUI", "AmatsukazeGUI\AmatsukazeGUI.csproj", "{1C9F8F44-413D-4186-A620-9FFB13D2EFF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E733A88-E41A-4370-B25F-1626A5F439F1} = {4E733A88-E41A-4370-B25F-1626A5F439F1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptCommand", "ScriptCommand\ScriptCommand.csproj", "{144D7C53-F3F6-4A46-A0E7-8D0E0300C93E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NicoJK18Client", "NicoJK18Client\NicoJK18Client.csproj", "{AE413D3E-10B9-4CD4-9CB8-349E56050FF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NicoJK18Client", "NicoJK18Client\NicoJK18Client.csproj", "{AE413D3E-10B9-4CD4-9CB8-349E56050FF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

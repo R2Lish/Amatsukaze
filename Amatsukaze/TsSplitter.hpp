@@ -434,7 +434,7 @@ public:
 		preferedServiceId = sid;
 	}
 
-	int getActualServiceId() {
+	int getActualServiceId() const {
 		return selectedServiceId;
 	}
 

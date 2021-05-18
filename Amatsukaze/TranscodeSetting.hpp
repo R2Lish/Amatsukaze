@@ -8,11 +8,14 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 #include "StreamUtils.hpp"
 
 // カラースペース定義を使うため
 #include "libavutil/pixfmt.h"
+
+namespace fs = std::filesystem;
 
 struct EncoderZone {
 	int startFrame;
@@ -418,9 +421,10 @@ enum AMT_PRINT_PREFIX {
 class TempDirectory : AMTObject, NonCopyable
 {
 public:
-	TempDirectory(AMTContext& ctx, const tstring& tmpdir, bool noRemoveTmp)
+	TempDirectory(AMTContext& ctx, const tstring& tmpdir, const tstring& cachedir, bool noRemoveTmp)
 		: AMTObject(ctx)
 		, path_(tmpdir)
+		, cacheDirName_(cachedir)
 		, initialized_(false)
 		, noRemoveTmp_(noRemoveTmp)
 	{ }
@@ -438,11 +442,35 @@ public:
 
 	void Initialize() {
 		if (initialized_) return;
-
+		if (!cacheDirName_.empty())
+		{
+			const fs::path srcPath = cacheDirName_;
+			const auto filename = srcPath.stem();
+			const auto path = StringFormat(_T("%s/amt%s"), path_, filename.wstring());
+			fs::path p = path;
+			if (!fs::exists(p))
+			{
+				if (fs::create_directory(p)) {
+					path_ = path;
+					initialized_ = true;
+					return;
+				}
+				cacheDirName_.clear();
+			}
+			else
+			{
+				path_ = path;
+				initialized_ = true;
+				return;
+			}
+		}
 		for (int code = (int)time(NULL) & 0xFFFFFF; code > 0; ++code) {
 			auto path = genPath(path_, code);
+			fs::path p = path;
+			auto exist = fs::exists(p);
 			if (mkdirT(path.c_str()) == 0) {
 				path_ = path;
+				exist = fs::exists(p);
 				break;
 			}
 			if (errno != EEXIST) {
@@ -469,8 +497,13 @@ public:
 		return path_;
 	}
 
+	bool IsCache() const {
+		return !cacheDirName_.empty();
+	}
+
 private:
 	tstring path_;
+	tstring cacheDirName_;
 	bool initialized_;
 	bool noRemoveTmp_;
 
@@ -529,11 +562,13 @@ struct Config {
 	tstring nicoConvAssPath;
 	tstring nicoConvChSidPath;
 	ENUM_FORMAT format;
+	bool usingCache;
 	bool splitSub;
 	bool twoPass;
 	bool autoBitrate;
 	bool chapter;
 	bool subtitles;
+	bool makeTrimavs;
 	int nicojkmask;
 	bool nicojk18;
 	bool useNicoJKLog;
@@ -572,8 +607,8 @@ struct Config {
 	bool dumpStreamInfo;
 	bool systemAvsPlugin;
 	bool noRemoveTmp;
-  bool dumpFilter;
-  AMT_PRINT_PREFIX printPrefix;
+	bool dumpFilter;
+	AMT_PRINT_PREFIX printPrefix;
 };
 
 class ConfigWrapper : public AMTObject
@@ -584,7 +619,7 @@ public:
 		const Config& conf)
 		: AMTObject(ctx)
 		, conf(conf)
-		, tmpDir(ctx, conf.workDir, conf.noRemoveTmp)
+		, tmpDir(ctx, conf.workDir, conf.usingCache ? conf.srcFilePath : _T(""), conf.noRemoveTmp || (conf.mode != _T("ts") && conf.usingCache))
 	{
 		for (int cmtypei = 0; cmtypei < CMTYPE_MAX; ++cmtypei) {
 			if (conf.cmoutmask & (1 << cmtypei)) {
@@ -696,6 +731,10 @@ public:
 
 	bool isSubtitlesEnabled() const {
 		return conf.subtitles;
+	}
+
+	bool isMakeTrimavs() const {
+		return conf.makeTrimavs;
 	}
 
 	bool isNicoJKEnabled() const {
@@ -858,8 +897,12 @@ public:
 		return regtmp(StringFormat(_T("%s/i%d.mpg"), tmpDir.path(), index));
 	}
 
+	tstring getPacketInfoPath() const {
+		return regtmp(tmpDir.path() + _T("/packetinfo.dat"));
+	}
+
 	tstring getStreamInfoPath() const {
-		return conf.outVideoPath + _T("-streaminfo.dat");
+		return regtmp(tmpDir.path() + _T("/streaminfo.dat"));
 	}
 
 	tstring getEncVideoFilePath(EncodeFileKey key) const {
@@ -921,6 +964,10 @@ public:
 	tstring getTmpSRTFilePath(EncodeFileKey key, int langindex) const {
 		return regtmp(StringFormat(_T("%s/c%d-%d-%d-%d%s.srt"),
 			tmpDir.path(), key.video, key.format, key.div, langindex, GetCMSuffix(key.cm)));
+	}
+
+	tstring getTmpBestLogoPath(int vindex) const {
+		return regtmp(StringFormat(_T("%s/best_logo%d.dat"), tmpDir.path(), vindex));
 	}
 
 	tstring getTmpAMTSourcePath(int vindex) const {
@@ -1173,6 +1220,9 @@ public:
 		if (conf.subtitles) {
 			ctx.infoF("DRCSマッピング: %s", conf.drcsMapPath);
 		}
+		if (conf.mode == _T("cm")) {
+			ctx.infoF("trim.avsファイル作成: %s", conf.makeTrimavs ? "する" : "しない");
+		}
 		if (conf.serviceId > 0) {
 			ctx.infoF("サービスID: %d", conf.serviceId);
 		}
@@ -1186,6 +1236,10 @@ public:
 
 	void CreateTempDir() {
 		tmpDir.Initialize();
+	}
+
+	bool IsUsingCache() const {
+		return tmpDir.IsCache();
 	}
 
 private:

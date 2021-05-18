@@ -426,10 +426,10 @@ public:
 	const std::string& getError() const {
 		return errMessage;
 	}
-
-  void setTimePrefix(bool enable) {
-    timePrefix = enable;
-  }
+	
+	void setTimePrefix(bool enable) {
+		timePrefix = enable;
+	}
 
 	const std::map<std::string, std::wstring>& getDRCSMapping() const {
 		return drcsMap;

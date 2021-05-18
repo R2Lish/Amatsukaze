@@ -287,6 +287,11 @@ public:
 		auto dataptr = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(str.data()));
 		write(MemoryChunk(dataptr, sizeof(str[0])*str.size()));
 	}
+	void writeTString(const tstring& str) const {
+		writeValue((int64_t)str.size());
+		auto dataptr = const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(str.data()));
+		write(MemoryChunk(dataptr, sizeof(str[0]) * str.size()));
+	}
 	size_t read(MemoryChunk mc) const {
 		if (mc.length == 0) return 0;
 		size_t ret = fread(mc.data, 1, mc.length, fp_);
@@ -319,6 +324,10 @@ public:
 	std::string readString() const {
 		auto v = readArray<char>();
 		return std::string(v.begin(), v.end());
+	}
+	tstring readTString() const {
+		auto v = readArray<tchar>();
+		return tstring(v.begin(), v.end());
 	}
 	void flush() const {
 		fflush(fp_);

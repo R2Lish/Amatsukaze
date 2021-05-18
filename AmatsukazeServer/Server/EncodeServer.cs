@@ -1452,6 +1452,11 @@ namespace Amatsukaze.Server
                     }
                 } // if (mode != ProcMode.CMCheck)
 
+                if (mode == ProcMode.CMCheck && profile.EnableMakeCMCutAvs)
+                {
+                    sb.Append(" --make-trimavs");
+                }
+
                 if (!profile.DisableSubs)
                 {
                     sb.Append(" --subtitles");
@@ -1507,6 +1512,10 @@ namespace Amatsukaze.Server
                 if (profile.NoRemoveTmp)
                 {
                     sb.Append(" --no-remove-tmp");
+                }
+                if (profile.UsingCache)
+                {
+                    sb.Append(" --cache");
                 }
                 if(profile.EnablePmtCut)
                 {

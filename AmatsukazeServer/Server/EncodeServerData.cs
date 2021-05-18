@@ -254,6 +254,8 @@ namespace Amatsukaze.Server
         [DataMember]
         public bool DisableSubs { get; set; }
         [DataMember]
+        public bool EnableMakeCMCutAvs { get; set; }
+        [DataMember]
         public bool IgnoreNoDrcsMap { get; set; }
         [DataMember]
         public bool LooseLogoDetection { get; set; }
@@ -279,6 +281,8 @@ namespace Amatsukaze.Server
         public bool MoveEDCBFiles { get; set; }
         [DataMember]
         public bool NoRemoveTmp { get; set; }
+        [DataMember]
+        public bool UsingCache { get; set; }
         [DataMember]
         public bool DisableLogFile { get; set; }
 
@@ -470,8 +474,10 @@ namespace Amatsukaze.Server
             }
         }
 
-        public System.Diagnostics.ProcessPriorityClass ProcessPriorityClass {
-            get {
+        public System.Diagnostics.ProcessPriorityClass ProcessPriorityClass
+        {
+            get
+            {
                 return new System.Diagnostics.ProcessPriorityClass[]
                 {
                     System.Diagnostics.ProcessPriorityClass.Idle,
@@ -711,7 +717,7 @@ namespace Amatsukaze.Server
         {
             get
             {
-                if(EncodeStart == DateTime.MinValue || EncodeTime == TimeSpan.Zero)
+                if (EncodeStart == DateTime.MinValue || EncodeTime == TimeSpan.Zero)
                 {
                     return DateTime.MinValue;
                 }
@@ -726,16 +732,20 @@ namespace Amatsukaze.Server
         public string DirName { get { return Path.GetDirectoryName(SrcPath); } }
         public string FileName { get { return Path.GetFileName(SrcPath); } }
 
-        public bool IsActive {
-            get {
+        public bool IsActive
+        {
+            get
+            {
                 return State == QueueState.Encoding ||
                     State == QueueState.LogoPending ||
                     State == QueueState.Queue;
             }
         }
 
-        public bool IsOneSeg {
-            get {
+        public bool IsOneSeg
+        {
+            get
+            {
                 return ImageWidth <= 320 || ImageHeight <= 260;
             }
         }
@@ -874,8 +884,10 @@ namespace Amatsukaze.Server
 
         public ExtensionDataObject ExtensionData { get; set; }
 
-        public string DisplayType {
-            get {
+        public string DisplayType
+        {
+            get
+            {
                 if (Type == CheckType.CM) return "CM解析";
                 else if (Type == CheckType.DRCS) return "DRCSチェック";
                 else return "不明";
@@ -1005,8 +1017,8 @@ namespace Amatsukaze.Server
             get
             {
                 return (SrcVideoDuration != null)
-? (SrcVideoDuration.TotalSeconds / EncodeDuration.TotalSeconds).ToString("F2")
-: null;
+                    ? (SrcVideoDuration.TotalSeconds / EncodeDuration.TotalSeconds).ToString("F2")
+                    : null;
             }
         }
         public string DisplaySrcBitrate
@@ -1014,8 +1026,8 @@ namespace Amatsukaze.Server
             get
             {
                 return (SrcVideoDuration != null)
-? ((double)SrcFileSize / (SrcVideoDuration.TotalSeconds * 128.0 * 1024)).ToString("F3")
-: null;
+                    ? ((double)SrcFileSize / (SrcVideoDuration.TotalSeconds * 128.0 * 1024)).ToString("F3")
+                    : null;
             }
         }
         public string DisplayOutBitrate
@@ -1023,17 +1035,19 @@ namespace Amatsukaze.Server
             get
             {
                 return (SrcVideoDuration != null)
-? ((double)OutFileSize / (OutVideoDuration.TotalSeconds * 128.0 * 1024)).ToString("F3")
-: null;
+                    ? ((double)OutFileSize / (OutVideoDuration.TotalSeconds * 128.0 * 1024)).ToString("F3")
+                    : null;
             }
         }
         public string DisplayLogo { get { return LogoFiles?.FirstOrDefault() ?? "なし"; } }
         public string DisplayChapter { get { return Chapter ? "○" : "☓"; } }
         public string DisplayNicoJK { get { return NicoJK ? "○" : "☓"; } }
         public string DisplayTrimAVS { get { return TrimAVS ? "○" : "☓"; } }
-        public string DisplayOutputMask {
-            get {
-                switch(OutputMask)
+        public string DisplayOutputMask
+        {
+            get
+            {
+                switch (OutputMask)
                 {
                     case 1: return "通常";
                     case 2: return "CMをカット";
@@ -1153,7 +1167,7 @@ namespace Amatsukaze.Server
         public CheckLogItem CheckLogItem { get; set; }
     }
 
-        [DataContract]
+    [DataContract]
     public class DiskItem
     {
         [DataMember]

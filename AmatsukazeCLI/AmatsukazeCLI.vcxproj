@@ -106,6 +106,18 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\utv_core.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\AviSynth.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avcodec-58.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avdevice-58.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avfilter-7.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avformat-58.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avutil-56.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\swresample-3.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\swscale-5.dll $(OutputPath)
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -140,6 +152,18 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\utv_core.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\AviSynth.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avcodec-58.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avdevice-58.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avfilter-7.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avformat-58.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\avutil-56.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\swresample-3.dll $(OutputPath)
+xcopy /y /d $(SolutionDir)lib\$(PlatformTarget)\swscale-5.dll $(OutputPath)
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AmatsukazeCLI.cpp" />

@@ -27,6 +27,47 @@
 
 class AMTSplitter : public TsSplitter {
 public:
+	class PacketInfo
+	{
+	public:
+		PacketInfo()
+		{}
+		PacketInfo(const AMTSplitter* splitter)
+			:selectedServiceId(splitter->getActualServiceId())
+			, numTotalPackets(splitter->getNumTotalPackets())
+			, numScramblePackets(splitter->getNumScramblePackets())
+			, totalIntVideoSize_(splitter->getTotalIntVideoSize())
+			, srcFileSize_(splitter->getSrcFileSize())
+		{}
+
+		int selectedServiceId;
+		int64_t numTotalPackets;
+		int64_t numScramblePackets;
+		int64_t totalIntVideoSize_;
+		int64_t srcFileSize_;
+
+		void serialize(const tstring& path) const
+		{
+			const auto& file = File(path, _T("wb"));
+			file.writeValue(selectedServiceId);
+			file.writeValue(numTotalPackets);
+			file.writeValue(numScramblePackets);
+			file.writeValue(totalIntVideoSize_);
+			file.writeValue(srcFileSize_);
+		}
+		static PacketInfo desrialize(const tstring& path)
+		{
+			PacketInfo si;
+			const auto& file = File(path, _T("rb"));
+			si.selectedServiceId = file.readValue<int>();
+			si.numTotalPackets = file.readValue<int64_t>();
+			si.numScramblePackets = file.readValue<int64_t>();
+			si.totalIntVideoSize_ = file.readValue<int64_t>();
+			si.srcFileSize_ = file.readValue<int64_t>();
+			return si;
+		}
+	};
+
 	AMTSplitter(AMTContext& ctx, const ConfigWrapper& setting)
 		: TsSplitter(ctx, true, true, setting.isSubtitlesEnabled())
 		, setting_(setting)
@@ -62,6 +103,19 @@ public:
 
 	int64_t getTotalIntVideoSize() const {
 		return writeHandler.getTotalSize();
+	}
+
+	PacketInfo getPacketInfo() const {
+		return PacketInfo(this);
+	}
+
+	void serialize(const tstring& path) const 
+	{
+		getPacketInfo().serialize(path);
+	}
+
+	static PacketInfo deserialize(const tstring& path) {
+		return PacketInfo::desrialize(path);
 	}
 
 protected:
@@ -481,22 +535,33 @@ static void transcodeMain(AMTContext& ctx, const ConfigWrapper& setting)
 
 	Stopwatch sw;
 	sw.start();
-	auto splitter = std::unique_ptr<AMTSplitter>(new AMTSplitter(ctx, setting));
-	if (setting.getServiceId() > 0) {
-		splitter->setServiceId(setting.getServiceId());
-	}
-	StreamReformInfo reformInfo = splitter->split();
-	ctx.infoF("TS解析完了: %.2f秒", sw.getAndReset());
-	int serviceId = splitter->getActualServiceId();
-	int64_t numTotalPackets = splitter->getNumTotalPackets();
-	int64_t numScramblePackets = splitter->getNumScramblePackets();
-	int64_t totalIntVideoSize = splitter->getTotalIntVideoSize();
-	int64_t srcFileSize = splitter->getSrcFileSize();
-	splitter = nullptr;
 
-	if (setting.isDumpStreamInfo()) {
-		reformInfo.serialize(setting.getStreamInfoPath());
+	std::unique_ptr<AMTSplitter> splitter;
+	bool UsePackeInfoCache = setting.IsUsingCache() && fs::exists(setting.getPacketInfoPath()) && fs::exists(setting.getStreamInfoPath());
+	if (!UsePackeInfoCache) {
+		splitter = std::unique_ptr<AMTSplitter>(new AMTSplitter(ctx, setting));
+		if (setting.getServiceId() > 0) {
+			splitter->setServiceId(setting.getServiceId());
+		}
 	}
+	StreamReformInfo reformInfo = UsePackeInfoCache ? StreamReformInfo::deserialize(ctx, setting.getStreamInfoPath()) : splitter->split();
+	const AMTSplitter::PacketInfo packetInfo = UsePackeInfoCache ? AMTSplitter::deserialize(setting.getPacketInfoPath()) : splitter->getPacketInfo();
+
+	ctx.infoF("TS解析完了: %.2f秒", sw.getAndReset());
+	int serviceId = packetInfo.selectedServiceId;
+	int64_t numTotalPackets = packetInfo.numTotalPackets;
+	int64_t numScramblePackets = packetInfo.numScramblePackets;
+	int64_t totalIntVideoSize = packetInfo.totalIntVideoSize_;
+	int64_t srcFileSize = packetInfo.srcFileSize_;
+
+	if (setting.isDumpStreamInfo() || setting.IsUsingCache()) {
+		if (!UsePackeInfoCache) {
+			splitter->serialize(setting.getPacketInfoPath());
+			reformInfo.serialize(setting.getStreamInfoPath());
+		}
+	}
+
+	splitter = nullptr;
 
 	// スクランブルパケットチェック
 	double scrambleRatio = (double)numScramblePackets / (double)numTotalPackets;

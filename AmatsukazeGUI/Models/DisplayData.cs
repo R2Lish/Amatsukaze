@@ -1406,6 +1406,20 @@ namespace Amatsukaze.Models
         }
         #endregion
 
+        #region EnableMakeCMCutAvs変更通知プロパティ
+        public bool EnableMakeCMCutAvs
+        {
+            get { return Data.EnableMakeCMCutAvs; }
+            set
+            {
+                if (Data.EnableMakeCMCutAvs == value)
+                    return;
+                Data.EnableMakeCMCutAvs = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #region EnableNicoJK変更通知プロパティ
         public bool EnableNicoJK {
             get { return Data.EnableNicoJK; }
@@ -1622,6 +1636,20 @@ namespace Amatsukaze.Models
                 if (Data.NoRemoveTmp == value)
                     return;
                 Data.NoRemoveTmp = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region UsingCache変更通知プロパティ
+        public bool UsingCache
+        {
+            get { return Data.UsingCache; }
+            set
+            {
+                if (Data.UsingCache == value)
+                    return;
+                Data.UsingCache = value;
                 RaisePropertyChanged();
             }
         }

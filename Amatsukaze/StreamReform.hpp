@@ -462,6 +462,9 @@ public:
 		WriteArray(file, captionItemList_);
 		file.writeArray(streamEventList_);
 		file.writeArray(timeList_);
+
+		file.writeValue(firstFrameTime_);
+		file.writeValue(srcTotalDuration_);
 	}
 
 	static StreamReformInfo deserialize(AMTContext& ctx, const tstring& path) {

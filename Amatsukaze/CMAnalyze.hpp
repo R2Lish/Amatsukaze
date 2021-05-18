@@ -67,6 +67,13 @@ public:
 
 		ctx.info("[CM‰ðÍŒ‹‰Ê - TrimAVS]");
 		PrintFileAll(setting_.getTmpTrimAVSPath(videoFileIndex));
+		if (setting.isMakeTrimavs()) {
+			// Šù‚Éƒtƒ@ƒCƒ‹‚ª‘¶Ý‚·‚éê‡‚Íã‘‚«‚µ‚È‚¢.
+			auto dstAvsPath = StringFormat(_T("%s%s"), setting_.getSrcFilePath(), _T("trim.avs"));
+			if (!fs::exists(dstAvsPath)) {
+				fs::copy_file(setting_.getTmpTrimAVSPath(videoFileIndex), dstAvsPath);
+			}
+		}
 		ctx.info("[CM‰ðÍŒ‹‰Ê - Ú×]");
 		PrintFileAll(setting_.getTmpJlsPath(videoFileIndex));
 
@@ -272,6 +279,12 @@ private:
 
 	void logoFrame(int videoFileIndex, const tstring& avspath)
 	{
+		bool useCacheFile = setting_.IsUsingCache() && fs::exists(setting_.getTmpBestLogoPath(videoFileIndex));
+		if (useCacheFile) {
+			File file(setting_.getTmpBestLogoPath(videoFileIndex), _T("rb"));
+			logopath = file.readTString();
+			return;
+		}
 		ScriptEnvironmentPointer env = make_unique_ptr(CreateScriptEnvironment2());
 
 		try {
@@ -280,7 +293,7 @@ private:
 			env->LoadPlugin(to_string(GetModulePath()).c_str(), true, &result);
 			PClip clip = env->Invoke("AMTSource", to_string(setting_.getTmpAMTSourcePath(videoFileIndex)).c_str()).AsClip();
 
-			auto vi = clip->GetVideoInfo();
+			const auto& vi = clip->GetVideoInfo();
 			int duration = vi.num_frames * vi.fps_denominator / vi.fps_numerator;
 
 			const auto& logoPath = setting_.getLogoPath();
@@ -304,6 +317,8 @@ private:
 				}
 				else {
 					logopath = setting_.getLogoPath()[logof.getBestLogo()];
+					File file(setting_.getTmpBestLogoPath(videoFileIndex), _T("wb"));
+					file.writeTString(logopath);
 				}
 			}
 
@@ -326,9 +341,13 @@ private:
 
 	void chapterExe(int videoFileIndex, const tstring& avspath)
 	{
-		File stdoutf(setting_.getTmpChapterExeOutPath(videoFileIndex), _T("wb"));
 		auto args = MakeChapterExeArgs(videoFileIndex, avspath);
 		ctx.infoF("%s", args);
+
+		if (setting_.IsUsingCache() && fs::exists(setting_.getTmpChapterExeOutPath(videoFileIndex))) {
+			return;
+		}
+		File stdoutf(setting_.getTmpChapterExeOutPath(videoFileIndex), _T("wb"));
 		MySubProcess process(args, &stdoutf);
 		int exitCode = process.join();
 		if (exitCode != 0) {
