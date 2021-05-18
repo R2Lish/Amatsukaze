@@ -1509,7 +1509,7 @@ namespace Amatsukaze.Server
                 {
                     sb.Append(" --no-delogo");
                 }
-                if (profile.NoRemoveTmp)
+                if (profile.NoRemoveTmp || (profile.UsingCache && ProcMode.Test == mode))
                 {
                     sb.Append(" --no-remove-tmp");
                 }

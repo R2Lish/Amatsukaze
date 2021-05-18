@@ -69,7 +69,7 @@ public:
 		PrintFileAll(setting_.getTmpTrimAVSPath(videoFileIndex));
 		if (setting.isMakeTrimavs()) {
 			// Šù‚Éƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡‚Íã‘‚«‚µ‚È‚¢.
-			auto dstAvsPath = StringFormat(_T("%s%s"), setting_.getSrcFilePath(), _T("trim.avs"));
+			auto dstAvsPath = StringFormat(_T("%s%s"), setting_.getSrcFilePath(), _T(".trim.avs"));
 			if (!fs::exists(dstAvsPath)) {
 				fs::copy_file(setting_.getTmpTrimAVSPath(videoFileIndex), dstAvsPath);
 			}
